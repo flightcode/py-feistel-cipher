@@ -38,13 +38,12 @@ def menu(): # Menu Options
         option = int(input("Enter option: ")) # Get input as int
         print("")
         if option == 1: # Encrypt
-            print("--- STARTING ENCRYPT ---")
-            # encrypt()
-            print("--- FINISHED ENCRYPT ---")
+            decrypted = input("Enter message: ")
+            key = input("Enter key: ")
+            encrypt(decrypted,key)
         elif option == 2: # Decrypt
-            print("--- STARTING DECRYPT ---")
-            # decrypt()
-            print("--- FINISHED DECRYPT ---")
+            encrypted = input("Enter message: ")
+            decrypt(encrypted)
         elif option == 3: # Exit
             print("--- GOODBYE ---")
             menuLoop = False
