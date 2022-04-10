@@ -30,21 +30,21 @@ def menu(): # Menu Options
     while menuLoop: # Run until user selects to exit
         print("")
         print("--- MENU ---")
-        print("1. Decrypt")
-        print("2. Encrypt")
+        print("1. Encrypt")
+        print("2. Decrypt")
         print("3. Exit")
         print("--- MENU ---")
         print("")
         option = int(input("Enter option: ")) # Get input as int
         print("")
-        if option == 1: # Decrypt
-            print("--- STARTING DECRYPT ---")
-            decrypt("test")
-            print("--- FINISHED DECRYPT ---")
-        elif option == 2: # Encrypt
+        if option == 1: # Encrypt
             print("--- STARTING ENCRYPT ---")
-            encrypt("test")
+            # encrypt()
             print("--- FINISHED ENCRYPT ---")
+        elif option == 2: # Decrypt
+            print("--- STARTING DECRYPT ---")
+            # decrypt()
+            print("--- FINISHED DECRYPT ---")
         elif option == 3: # Exit
             print("--- GOODBYE ---")
             menuLoop = False
