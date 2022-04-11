@@ -13,6 +13,7 @@ import sys # For CLI rguments
 import getopt # Parses CLI arguments
 import itertools # Code-efficient iterators
 import string
+import math
 
 def main(): # Welcome message and run menu
     print("--- FEISTEL CIPHER ----")
@@ -69,6 +70,17 @@ def main(): # Welcome message and run menu
 
 def encrypt(decrypted, key): # Encrypt string with given key    
     encrypted = ""
+    n = 4 # Amount of blocks to split into, TODO: Update to add user-option
+    size = (int)(n * math.ceil(len(decrypted)/n) / n) # Size of blocks
+    blocks = [decrypted[i:i+size] for i in range(0,len(decrypted), size)] # Split string into `n` even parts
+
+    if len(blocks[-1]) < size: # If last block not full
+        for i in range(len(blocks[-1]),size): # Fill remaining space with whitespace
+            blocks[-1] += " "
+
+    for block in blocks:
+        print(block)
+
     return encrypted
 
 def decrypt(encrypted, key): # Decrypt string with given key
