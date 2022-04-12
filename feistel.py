@@ -6,7 +6,7 @@
 # USAGE: 
 #   python3 feistel.py 
 #       -m (e|encrypt, d|decrypt, i|interactive) 
-#       [-f <filename> (required if -m not i|interactive)]
+#       [-f <file> (required if -m not i|interactive)]
 #       [-k <key> (required if -m e|encrypt)]
 
 import sys # For CLI rguments
