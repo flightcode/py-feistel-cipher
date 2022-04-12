@@ -14,6 +14,10 @@ import getopt # Parses CLI arguments
 import itertools # Code-efficient iterators
 import string
 import math
+import hashlib
+
+BLOCK_COUNT = 4
+ROUNDS = 4
 
 def main(): # Welcome message and run menu
     print("--- FEISTEL CIPHER ----")
@@ -68,19 +72,43 @@ def main(): # Welcome message and run menu
     else:
         return errorMessage("Invalid mode specified!")
 
-def encrypt(decrypted, key): # Encrypt string with given key    
+def encrypt(decrypted, key): # Encrypt string with given key  
     encrypted = ""
-    n = 4 # Amount of blocks to split into, TODO: Update to add user-option
-    size = (int)(n * math.ceil(len(decrypted)/n) / n) # Size of blocks
-    blocks = [decrypted[i:i+size] for i in range(0,len(decrypted), size)] # Split string into `n` even parts
+    n = BLOCK_COUNT # Amount of blocks to split into
+    blockSize = (int)(n * math.ceil(len(decrypted)/n) / n) # Size of blocks
+    blocks = [decrypted[i:i+blockSize] for i in range(0,len(decrypted), blockSize)] # Split string into `n` even parts
 
-    if len(blocks[-1]) < size: # If last block not full
-        for i in range(len(blocks[-1]),size): # Fill remaining space with whitespace
+    if len(blocks[-1]) < blockSize: # If last block not full
+        for i in range(len(blocks[-1]),blockSize): # Fill remaining space with whitespace
             blocks[-1] += " "
 
     for block in blocks:
-        print(block)
+        # print(block)
+        L = [""] * (ROUNDS + 1) # Set L/R, where 0 is initial,
+        R = [""] * (ROUNDS + 1) # and n+1 is ciphertext
+        K = [""] * (ROUNDS + 1) # Set subKeys
+        
+        # Split blocks into even L/R sides
+        pieceSize = (int)(blockSize/2)
+        L[0] = block[0:pieceSize]
+        R[0] = block[pieceSize:blockSize]
+        K[0] = genSubKey(key)
 
+        # print(f"L0 {L[0]}")
+        # print(f"R0 {R[0]}")
+        # print(f"K0 {K[0]}")
+
+        for i in range(1,ROUNDS+1): # Iterate through rounds, including final ciphertext round
+            # print(f"Round {i}")
+            # print(f"XOR L/R for round {xor(L[i],R[i])}")
+            L[i] = R[i-1] # Assign L to past R (Swap)
+            R[i] = xor(L[i-1], roundFunc(R[i-1],K[i-1],i)) # Complete XOR on past L and past F(R,K)
+            K[i] = genSubKey(L[i], K[0]) # Generate subkey for round using CBC (Cipher Block Chaining), combining initial key with previous value
+
+            # print(f"L{i+1} {L[i]}")
+            # print(f"R{i+1} {R[i]}")
+            # print(f"K{i+1} {K[i]}")
+        encrypted += (L[ROUNDS] + R[ROUNDS]) # Re-combine final L/R for block and add to block
     return encrypted
 
 def decrypt(encrypted, key): # Decrypt string with given key
@@ -106,6 +134,35 @@ def freqTest(message): # Test frequency of string against English language alpha
             letterTestStatistic = ((freq - ENGLISH_FREQ[c]) ** 2) / ENGLISH_FREQ[c] #Get test statistic
             testStatistic += letterTestStatistic #Add test statistic to total
     return testStatistic
+
+def genSubKey(a,b=""): # Generate round Sub-Key (SHA256), TODO: Add secret?
+    return hashlib.sha256((a + b).encode()).hexdigest()
+
+def xor(s1,s2): # Perform XOR on two strings
+    # Creates tuples of nth letter of both strings.
+    # Then performs XOR on each ASCII value of the
+    # characters, and returns the value as a character.
+    return "".join([chr(ord(a)^ord(b)) for a,b in zip(s1,s2)])
+
+def roundFunc(s,k,i): # TODO: Add pow(s*k,i)?
+    # Complete round function on R and Key.
+    # Used similar round function from research. github/filgut1
+    k = bintoint(strtobin(k)) # Convert K from String to Binary represented as Int
+    s = bintoint(strtobin(s)) # Convert S from String to Binary represented as Int
+    r = pow(s*k,i) # Complete work on S and K
+    return bintostr(inttobin(r)) # Convert R from Int representation of Bin to Str
+
+def strtobin(s): # Convert String to Binary
+    return "".join(format(ord(i), "08b") for i in s)
+
+def bintostr(b): # Convert Binary to String
+    return "".join(chr(int(b[i: i+8],2)) for i in range(0, len(b), 8)) # Convert every byte of binary to character, and join as string
+
+def bintoint(b): # Convery Binary to Int (Base2)
+    return int(b,2)
+
+def inttobin(i): # Convert Int to Binary
+    return bin(i)
 
 def errorMessage(message): # Print param 'message' formatted as ERROR
     print("--- ERROR ---")
