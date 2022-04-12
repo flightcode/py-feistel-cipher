@@ -44,16 +44,14 @@ def main(): # Welcome message and run menu
         menu()
     elif mode == "encrypt" or mode == "e" or mode == "decrypt" or mode == "d":
         if fileName != "":
-            file = open(fileName, "r") # Open file in read mode
-            text = file.read() # Read file contents to string
-            file.close() # Close file
+            with open(fileName, "r") as file: # Open file in read mode
+                text = file.read() # Read file contents to string
             if mode == "encrypt" or mode == "e":
                 if key != "":
                     print("--- START ENCRYPTION ---")
                     ciphertext = encrypt(text,key) # Encrypt string `decrypted` with key `key`
-                    file = open(f"{fileName}.out", "w") # Open file in write mode
-                    file.write(ciphertext) # Write encrypted string to file contents
-                    file.close() # Close file
+                    with open(f"{fileName}.out", "w") as file: # Open file in write mode
+                        file.write(ciphertext) # Write encrypted string to file contents
                     print(f"--- OUTPUT to '{fileName}.out' ---")
                     print("--- FINISH ENCRYPTION ---")
                 else:
@@ -63,9 +61,8 @@ def main(): # Welcome message and run menu
                 key = solve(text) # Find correct key
                 print("--- KEY SOLVED ---")
                 plaintext = decrypt(text, key)
-                file = open(f"{fileName}.out", "w") # Open file in write mode
-                file.write(plaintext) # Write decrypted string to file contents
-                file.close() # Close file
+                with open(f"{fileName}.out", "w") as file: # Open file in write mode
+                    file.write(plaintext) # Write decrypted string to file contents
                 print("--- FINISH DECRYPTION ---")
         else:
             return errorMessage("File not specified!")
