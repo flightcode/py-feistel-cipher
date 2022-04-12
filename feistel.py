@@ -23,26 +23,39 @@ def main(): # Welcome message and run menu
     print("--- FEISTEL CIPHER ----")
     print("--- FLIGHTCODE 2022 ----")
 
+    mode = "" # Interactive for testing or if user wants a menu
     fileName = "" # File to parse
-    mode = "" # Mode (interactive is for testing or if user wants a menu)
-    key = "" # If applicable, if not provided for decode, will attempt to crack. Required for encode.
+    key = "" # Required for encode.
 
     try: # Attempt to parse arguments (Strip first argument (Command))
-        opts, args = getopt.getopt(sys.argv[1:], "m:f:k:")
+        opts, args = getopt.getopt(sys.argv[1:], "hm:f:k:", ["help","mode=","file=","key="])
     except:
         errorMessage("Unable to parse arguments!")
+        print('Usage: ./feistel.py -m <mode> -f <file> -k <key>')
+        print('Modes: e|encrypt')
+        print('       d|decrypt')
+        print('       s|solve')
+        print('       i|interactive')
+        exit()
 
     for opt, arg in opts: # Assign from arguments 
-        if opt in ['-f']:
+        if opt in ["-h","--help"]:
+            print('Usage: ./feistel.py -m <mode> -f <file> -k <key>')
+            print('Modes: e|encrypt')
+            print('       d|decrypt')
+            print('       s|solve')
+            print('       i|interactive')
+            exit()
+        elif opt in ["-f","--file"]:
             fileName = arg
-        elif opt in ['-m']:
+        elif opt in ["-m","--mode"]:
             mode = arg
-        elif opt in ['-k']:
+        elif opt in ["-k","--key"]:
             key = arg
 
     if mode == "interactive" or mode == "i":
         menu()
-    elif mode == "encrypt" or mode == "e" or mode == "decrypt" or mode == "d":
+    elif mode == "encrypt" or mode == "e" or mode == "decrypt" or mode == "d" or mode == "solve" or mode == "s":
         if fileName != "":
             with open(fileName, "r") as file: # Open file in read mode
                 text = file.read() # Read file contents to string
@@ -57,6 +70,15 @@ def main(): # Welcome message and run menu
                 else:
                     return errorMessage("Key not specified!")
             elif mode == "decrypt" or mode == "d":
+                if key != "":
+                    print("--- START DECRYPTION ---")
+                    plaintext = decrypt(text, key)
+                    with open(f"{fileName}.out", "w") as file: # Open file in write mode
+                        file.write(plaintext) # Write decrypted string to file contents
+                    print("--- FINISH DECRYPTION ---")
+                else:
+                    return errorMessage("Key not specified!")
+            elif mode == "solve" or mode == "s":
                 print("--- START DECRYPTION ---")
                 key = solve(text) # Find correct key
                 print("--- KEY SOLVED ---")
