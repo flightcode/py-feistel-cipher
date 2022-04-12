@@ -93,8 +93,7 @@ def main(): # Welcome message and run menu
 
 def encrypt(plaintext, key): # Encrypt string with given key  
     ciphertext = ""
-    n = BLOCK_COUNT # Amount of blocks to split into
-    blockSize = (int)(n * math.ceil(len(plaintext)/n) / n) # Size of blocks
+    blockSize = (int)(BLOCK_COUNT * math.ceil(len(plaintext)/BLOCK_COUNT) / BLOCK_COUNT) # Size of blocks
     blocks = [plaintext[i:i+blockSize] for i in range(0,len(plaintext), blockSize)] # Split string into `n` even parts
 
     if len(blocks[-1]) < blockSize: # If last block not full
@@ -161,18 +160,18 @@ def xor(s1,s2): # Perform XOR on two strings
     # Creates tuples of nth letter of both strings.
     # Then performs XOR on each ASCII value of the
     # characters, and returns the value as a character.
-    return "".join([chr(ord(a)^ord(b)) for a,b in zip(s1,s2)])
+    return "".join(chr(ord(a)^ord(b)) for a,b in zip(s1,s2))
 
 def roundFunc(s,k,i): # TODO: Add pow(s*k,i)?
     # Complete round function on R and Key.
     # Used similar round function from research. github/filgut1
     k = bintoint(strtobin(k)) # Convert K from String to Binary represented as Int
     s = bintoint(strtobin(s)) # Convert S from String to Binary represented as Int
-    r = pow(s*k,i) # Complete work on S and K
+    r = pow((s*k),i) # Complete work on S and K
     return bintostr(inttobin(r)) # Convert R from Int representation of Bin to Str
 
 def strtobin(s): # Convert String to Binary
-    return "".join(format(ord(i), "08b") for i in s)
+    return "".join("{:08b}".format(ord(c)) for c in s)
 
 def bintostr(b): # Convert Binary to String
     return "".join(chr(int(b[i: i+8],2)) for i in range(0, len(b), 8)) # Convert every byte of binary to character, and join as string
