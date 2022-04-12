@@ -50,9 +50,9 @@ def main(): # Welcome message and run menu
             if mode == "encrypt" or mode == "e":
                 if key != "":
                     print("--- START ENCRYPTION ---")
-                    encrypted = encrypt(text,key) # Encrypt string `decrypted` with key `key`
+                    ciphertext = encrypt(text,key) # Encrypt string `decrypted` with key `key`
                     file = open(f"{fileName}.out", "w") # Open file in write mode
-                    file.write(encrypted) # Write encrypted string to file contents
+                    file.write(ciphertext) # Write encrypted string to file contents
                     file.close() # Close file
                     print(f"--- OUTPUT to '{fileName}.out' ---")
                     print("--- FINISH ENCRYPTION ---")
@@ -62,9 +62,9 @@ def main(): # Welcome message and run menu
                 print("--- START DECRYPTION ---")
                 key = solve(text) # Find correct key
                 print("--- KEY SOLVED ---")
-                decrypted = decrypt(text, key)
+                plaintext = decrypt(text, key)
                 file = open(f"{fileName}.out", "w") # Open file in write mode
-                file.write(decrypted) # Write decrypted string to file contents
+                file.write(plaintext) # Write decrypted string to file contents
                 file.close() # Close file
                 print("--- FINISH DECRYPTION ---")
         else:
@@ -72,11 +72,11 @@ def main(): # Welcome message and run menu
     else:
         return errorMessage("Invalid mode specified!")
 
-def encrypt(decrypted, key): # Encrypt string with given key  
-    encrypted = ""
+def encrypt(plaintext, key): # Encrypt string with given key  
+    ciphertext = ""
     n = BLOCK_COUNT # Amount of blocks to split into
-    blockSize = (int)(n * math.ceil(len(decrypted)/n) / n) # Size of blocks
-    blocks = [decrypted[i:i+blockSize] for i in range(0,len(decrypted), blockSize)] # Split string into `n` even parts
+    blockSize = (int)(n * math.ceil(len(plaintext)/n) / n) # Size of blocks
+    blocks = [plaintext[i:i+blockSize] for i in range(0,len(plaintext), blockSize)] # Split string into `n` even parts
 
     if len(blocks[-1]) < blockSize: # If last block not full
         for i in range(len(blocks[-1]),blockSize): # Fill remaining space with whitespace
@@ -108,14 +108,14 @@ def encrypt(decrypted, key): # Encrypt string with given key
             # print(f"L{i+1} {L[i]}")
             # print(f"R{i+1} {R[i]}")
             # print(f"K{i+1} {K[i]}")
-        encrypted += (L[ROUNDS] + R[ROUNDS]) # Re-combine final L/R for block and add to block
-    return encrypted
+        ciphertext += (L[ROUNDS] + R[ROUNDS]) # Re-combine final L/R for block and add to block
+    return ciphertext
 
-def decrypt(encrypted, key): # Decrypt string with given key
-    decrypted = ""
-    return decrypted
+def decrypt(ciphertext, key): # Decrypt string with given key
+    plaintext = ""
+    return plaintext
 
-def solve(encrypted): # Get key of encrypted string
+def solve(ciphertext): # Get key of encrypted string
     key = ""
     return key
 
@@ -182,22 +182,21 @@ def menu(): # Menu Options
         option = int(input("Enter option: ")) # Get input as int
         print("")
         if option == 1: # Encrypt
-            decrypted = input("Enter message: ")
+            plaintext = input("Enter message: ")
             key = input("Enter key: ")
             if key != "":
                 print("--- START ENCRYPTION ---")
-                print(f"Encrypted: {encrypt(decrypted,key)}") # Output encrypted value
+                print(f"Encrypted: {encrypt(plaintext,key)}") # Output encrypted value
                 print("--- FINISH ENCRYPTION ---")
             else:
                 return errorMessage("Key not specified!")
         elif option == 2: # Decrypt
-            encrypted = input("Enter message: ")
+            ciphertext = input("Enter message: ")
             print("--- START DECRYPTION ---")
-            key = solve(encrypted) # Find correct key
+            key = solve(ciphertext) # Find correct key
             print("--- KEY SOLVED ---")
-            print(f"Key: {solve(encrypted)}") # Decrypt string recursively, finding correct key
-            decrypted = decrypt(encrypted, key)
-            print(f"Decrypted: {decrypt(encrypted,key)}") # Decrypt string recursively, finding correct key
+            print(f"Key: {key}") # Decrypt string recursively, finding correct key
+            print(f"Decrypted: {decrypt(ciphertext,key)}") # Decrypt string recursively, finding correct key
             print("--- FINISH DECRYPTION ---")
         elif option == 3: # Exit
             print("--- GOODBYE ---")
