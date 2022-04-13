@@ -164,7 +164,7 @@ def strtobin(s): # Convert String to Binary
     return "".join("{:08b}".format(ord(c)) for c in s)
 
 def bintostr(b): # Convert Binary to String
-    return "".join(chr(int(b[i: i+8],2)) for i in range(0, len(b), 8)) # Convert every byte of binary to character, and join as string
+    return "".join(chr(int(b[i: i+7],2)) for i in range(0, len(b), 8)) # Convert every byte of binary to character, and join as string
 
 def bintoint(b): # Convery Binary to Int (Base2)
     return int(b,2)
