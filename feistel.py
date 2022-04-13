@@ -84,31 +84,29 @@ def main(): # Welcome message and run menu
 def encrypt(plaintext, key): # Encrypt string with given key through feistel structure  
     ciphertext = ""
     blockSize = calcBlockSize(plaintext, BLOCK_COUNT) # Size of blocks
-    blocks = createBlocks(plain, blockSize)
+    blocks = createBlocks(plaintext, blockSize)
     for block in blocks:
-        print(f"'{block}'")
-        K = [""] * (ROUNDS + 1) # Set subKeys
-        L = [""] * (ROUNDS + 1) # Set L/R, where 0 is initial,
-        R = [""] * (ROUNDS + 1) # and n+1 is ciphertext
-        
+        # print(f"'{block}'") # DEBUGGING
         # Split blocks into even L/R sides
+        K, L, R = getBlockRounds()
         pieceSize = (int)(blockSize/2)
+
         K[0] = genSubKey(key)
         L[0] = block[0:pieceSize]
         R[0] = block[pieceSize:blockSize]
-
-        print(f"K0 '{K[0]}'")
-        print(f"L0 '{L[0]}'")
-        print(f"R0 '{R[0]}'")
+        print(f"K0 '{K[0]}'") # DEBUGGING
+        print(f"L0 '{L[0]}'") # DEBUGGING
+        print(f"R0 '{R[0]}'") # DEBUGGING
 
         for i in range(1,ROUNDS+1): # Iterate through rounds, including final ciphertext round
+            print(i) # DEBUGGING
             K[i] = genSubKey(L[i-1], K[0]) # Generate subkey for round using CBC (Cipher Block Chaining), combining initial key with previous value
             L[i] = R[i-1] # Assign L to past R (Swap)
-            R[i] = xor(L[i-1], roundFunc(R[i-1],K[i],i)) # Complete XOR on past L and past F(R,K)
-        print(f"K{ROUNDS} '{K[ROUNDS]}'")
-        print(f"L{ROUNDS} '{L[ROUNDS]}'")
-        print(f"R{ROUNDS} '{R[ROUNDS]}'")
-        ciphertext += (R[ROUNDS] + L[ROUNDS]) # Re-combine final L/R for block and add to block
+            R[i] = xor(L[i-1], roundFunc(R[i-1],K[0],i)) # Complete XOR on past L and past F(R,K)
+        print(f"K{ROUNDS} '{K[ROUNDS]}'") # DEBUGGING
+        print(f"L{ROUNDS} '{L[ROUNDS]}'") # DEBUGGING
+        print(f"R{ROUNDS} '{R[ROUNDS]}'") # DEBUGGING
+        ciphertext += (R[ROUNDS] + L[ROUNDS]) # Re-combine final L/R (swapped again) for block and add to block
     return ciphertext
 
 def decrypt(ciphertext, key): # Decrypt string with given key through feistel structure  
@@ -119,11 +117,17 @@ def calcBlockSize(s,count): # Calculate block size given string and desired amou
     return (int)(count * math.ceil(len(s)/count) / count)
 
 def createBlocks(s,blockSize): # Create balanced blocks given string and desired block size
-    blocks = [plaintext[i:i+blockSize] for i in range(0,len(plaintext), blockSize)] # Split string into `n` even parts
+    blocks = [s[i:i+blockSize] for i in range(0,len(s), blockSize)] # Split string into `n` even parts
     if len(blocks[-1]) < blockSize: # If last block not full
         for i in range(len(blocks[-1]),blockSize): # Fill remaining space with whitespace
             blocks[-1] += " "
     return blocks
+
+def createBlockRounds(r): # Create initial K/L/R arrays based on desired amount of rounds
+    K = [""] * (r + 1) # Set subKeys
+    L = [""] * (r + 1) # Set L/R, where 0 is initial,
+    R = [""] * (r + 1) # and n+1 is ciphertext
+    return K,L,R
 
 def genSubKey(a,b=""): # Generate round Sub-Key (SHA256), TODO: Add secret?
     return hashlib.sha256((a + b).encode()).hexdigest()
