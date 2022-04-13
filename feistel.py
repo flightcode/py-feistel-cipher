@@ -83,12 +83,8 @@ def main(): # Welcome message and run menu
 
 def encrypt(plaintext, key): # Encrypt string with given key through feistel structure  
     ciphertext = ""
-    blockSize = (int)(BLOCK_COUNT * math.ceil(len(plaintext)/BLOCK_COUNT) / BLOCK_COUNT) # Size of blocks
-    blocks = [plaintext[i:i+blockSize] for i in range(0,len(plaintext), blockSize)] # Split string into `n` even parts
-    if len(blocks[-1]) < blockSize: # If last block not full
-        for i in range(len(blocks[-1]),blockSize): # Fill remaining space with whitespace
-            blocks[-1] += " "
-
+    blockSize = calcBlockSize(plaintext, BLOCK_COUNT) # Size of blocks
+    blocks = createBlocks(plain, blockSize)
     for block in blocks:
         print(f"'{block}'")
         K = [""] * (ROUNDS + 1) # Set subKeys
@@ -118,6 +114,16 @@ def encrypt(plaintext, key): # Encrypt string with given key through feistel str
 def decrypt(ciphertext, key): # Decrypt string with given key through feistel structure  
     plaintext = ""
     return plaintext
+
+def calcBlockSize(s,count): # Calculate block size given string and desired amount of blocks
+    return (int)(count * math.ceil(len(s)/count) / count)
+
+def createBlocks(s,blockSize): # Create balanced blocks given string and desired block size
+    blocks = [plaintext[i:i+blockSize] for i in range(0,len(plaintext), blockSize)] # Split string into `n` even parts
+    if len(blocks[-1]) < blockSize: # If last block not full
+        for i in range(len(blocks[-1]),blockSize): # Fill remaining space with whitespace
+            blocks[-1] += " "
+    return blocks
 
 def genSubKey(a,b=""): # Generate round Sub-Key (SHA256), TODO: Add secret?
     return hashlib.sha256((a + b).encode()).hexdigest()
