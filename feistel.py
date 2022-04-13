@@ -34,7 +34,6 @@ def main(): # Welcome message and run menu
         print('Usage: ./feistel.py -m <mode> -f <file> -k <key>')
         print('Modes: e|encrypt')
         print('       d|decrypt')
-        print('       s|solve')
         print('       i|interactive')
         exit()
 
@@ -43,7 +42,6 @@ def main(): # Welcome message and run menu
             print('Usage: ./feistel.py -m <mode> -f <file> -k <key>')
             print('Modes: e|encrypt')
             print('       d|decrypt')
-            print('       s|solve')
             print('       i|interactive')
             exit()
         elif opt in ["-f","--file"]:
@@ -55,7 +53,7 @@ def main(): # Welcome message and run menu
 
     if mode == "interactive" or mode == "i":
         menu()
-    elif mode == "encrypt" or mode == "e" or mode == "decrypt" or mode == "d" or mode == "solve" or mode == "s":
+    elif mode == "encrypt" or mode == "e" or mode == "decrypt" or mode == "d":
         if fileName != "":
             with open(fileName, "r") as file: # Open file in read mode
                 text = file.read() # Read file contents to string
@@ -78,14 +76,6 @@ def main(): # Welcome message and run menu
                     print("--- FINISH DECRYPTION ---")
                 else:
                     return errorMessage("Key not specified!")
-            elif mode == "solve" or mode == "s":
-                print("--- START DECRYPTION ---")
-                key = solve(text) # Find correct key
-                print("--- KEY SOLVED ---")
-                plaintext = decrypt(text, key)
-                with open(f"{fileName}.out", "w") as file: # Open file in write mode
-                    file.write(plaintext) # Write decrypted string to file contents
-                print("--- FINISH DECRYPTION ---")
         else:
             return errorMessage("File not specified!")
     else:
@@ -210,12 +200,13 @@ def menu(): # Menu Options
                 return errorMessage("Key not specified!")
         elif option == 2: # Decrypt
             ciphertext = input("Enter message: ")
-            print("--- START DECRYPTION ---")
-            key = solve(ciphertext) # Find correct key
-            print("--- KEY SOLVED ---")
-            print(f"Key: {key}") # Decrypt string recursively, finding correct key
-            print(f"Decrypted: {decrypt(ciphertext,key)}") # Decrypt string recursively, finding correct key
-            print("--- FINISH DECRYPTION ---")
+            key = input("Enter key: ")
+            if key != "":
+                print("--- START DECRYPTION ---")
+                print(f"Decrypted: {decrypt(plaintext,key)}") # Output decrypted value
+                print("--- FINISH ENCRYPTION ---")
+            else:
+                return errorMessage("Key not specified!")
         elif option == 3: # Exit
             print("--- GOODBYE ---")
             menuLoop = False
