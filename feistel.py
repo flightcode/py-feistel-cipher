@@ -110,6 +110,8 @@ def encrypt(plaintext, key): # Encrypt string with given key through feistel str
     return ciphertext
 
 def decrypt(ciphertext, key): # Decrypt string with given key through feistel structure  
+    # I attempted to reverse the key generation, such that I could use the key to complete more complex
+    # round functions, however after many hours of debugging, I was unable to fix this.
     plaintext = ""
     blockSize = calcBlockSize(ciphertext, BLOCK_COUNT) # Size of blocks
     blocks = createBlocks(ciphertext, blockSize)
