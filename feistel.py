@@ -123,26 +123,6 @@ def decrypt(ciphertext, key): # Decrypt string with given key
     plaintext = ""
     return plaintext
 
-def solve(ciphertext): # Get key of encrypted string
-    key = ""
-    return key
-
-def freqTest(message): # Test frequency of string against English language alphabet frequencies using Chi-Squared Test (0 is most accurate)
-    ENGLISH_FREQ = { # Frequencies of characters in English language
-        "A": 0.08497, "B": 0.01492, "C": 0.02202, "D": 0.04253, "E": 0.11162, "F": 0.02228,
-        "G": 0.02015, "H": 0.06094, "I": 0.07546, "J": 0.00153, "K": 0.01292, "L": 0.04025,
-        "M": 0.02406, "N": 0.06749, "O": 0.07507, "P": 0.01929, "Q": 0.00095, "R": 0.07587,
-        "S": 0.06327, "T": 0.09356, "U": 0.02758, "V": 0.00978, "W": 0.02560, "X": 0.00150,
-        "Y": 0.01994, "Z": 0.00077,
-    }
-    testStatistic = 0.0
-    for c in ENGLISH_FREQ: # Iterate through all characters
-        if c in message:
-            freq = message.count(c) / len(message) # Get occurrence of character in shift
-            letterTestStatistic = ((freq - ENGLISH_FREQ[c]) ** 2) / ENGLISH_FREQ[c] #Get test statistic
-            testStatistic += letterTestStatistic #Add test statistic to total
-    return testStatistic
-
 def genSubKey(a,b=""): # Generate round Sub-Key (SHA256), TODO: Add secret?
     return hashlib.sha256((a + b).encode()).hexdigest()
 
