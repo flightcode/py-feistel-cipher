@@ -134,12 +134,12 @@ def xor(s1,s2): # Perform XOR on two strings
     # characters, and returns the value as a character.
     return "".join(chr(ord(a)^ord(b)) for a,b in zip(s1,s2))
 
-def roundFunc(s,k,i): # Performs 'scramble' function on R side of block and Key.
+def roundFunc(s,key,i): # Performs 'scramble' function on R side of block and Key.
     # Complete round function on R and Key.
     # Used similar round function from research. github/filgut1
-    k = bintoint(strtobin(k)) # Convert K from String to Binary represented as Int
+    key = bintoint(strtobin(key)) # Convert K from String to Binary represented as Int
     s = bintoint(strtobin(s)) # Convert S from String to Binary represented as Int
-    # r = pow((s*k),i) # Complete work on S and K
+    # r = pow((s*key),i) # Complete work on S and K
     r = s # DEBUGGING
     return bintostr(inttobin(r)) # Convert R from Int representation of Bin to Str
 
