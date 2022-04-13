@@ -73,6 +73,7 @@ def main(): # Welcome message and run menu
                     plaintext = decrypt(text, key)
                     with open(f"{fileName}.out", "w") as file: # Open file in write mode
                         file.write(plaintext) # Write decrypted string to file contents
+                    print(f"--- OUTPUT to '{fileName}.out' ---")
                     print("--- FINISH DECRYPTION ---")
                 else:
                     return errorMessage("Key not specified!")
@@ -87,30 +88,52 @@ def encrypt(plaintext, key): # Encrypt string with given key through feistel str
     blocks = createBlocks(plaintext, blockSize)
     for block in blocks:
         # print(f"'{block}'") # DEBUGGING
-        # Split blocks into even L/R sides
-        K, L, R = getBlockRounds()
+        K, L, R = createBlockRounds(ROUNDS)
         pieceSize = (int)(blockSize/2)
 
-        K[0] = genSubKey(key)
+        R[0] = block[pieceSize:blockSize] # Split blocks into even L/R sides
         L[0] = block[0:pieceSize]
-        R[0] = block[pieceSize:blockSize]
-        print(f"K0 '{K[0]}'") # DEBUGGING
-        print(f"L0 '{L[0]}'") # DEBUGGING
-        print(f"R0 '{R[0]}'") # DEBUGGING
+        K[0] = genSubKey(L[0],key)
+        print(f"K{0} '{K[0]}'") # DEBUGGING
+        # print(f"L0 '{L[0]}'") # DEBUGGING
+        # print(f"R0 '{R[0]}'") # DEBUGGING
 
         for i in range(1,ROUNDS+1): # Iterate through rounds, including final ciphertext round
-            print(i) # DEBUGGING
-            K[i] = genSubKey(L[i-1], K[0]) # Generate subkey for round using CBC (Cipher Block Chaining), combining initial key with previous value
+            # print(i) # DEBUGGING
             L[i] = R[i-1] # Assign L to past R (Swap)
-            R[i] = xor(L[i-1], roundFunc(R[i-1],K[0],i)) # Complete XOR on past L and past F(R,K)
-        print(f"K{ROUNDS} '{K[ROUNDS]}'") # DEBUGGING
-        print(f"L{ROUNDS} '{L[ROUNDS]}'") # DEBUGGING
-        print(f"R{ROUNDS} '{R[ROUNDS]}'") # DEBUGGING
+            K[i] = genSubKey(L[i], key) # Generate subkey for round using CBC (Cipher Block Chaining), combining initial key with previous value
+            R[i] = xor(L[i-1], roundFunc(R[i-1],K[i],i)) # Complete XOR on past L and past F(R,K)
+            print(f"K{i} '{K[i]}'") # DEBUGGING
+        # print(f"L{ROUNDS} '{L[ROUNDS]}'") # DEBUGGING
+        # print(f"R{ROUNDS} '{R[ROUNDS]}'") # DEBUGGING
         ciphertext += (R[ROUNDS] + L[ROUNDS]) # Re-combine final L/R (swapped again) for block and add to block
     return ciphertext
 
 def decrypt(ciphertext, key): # Decrypt string with given key through feistel structure  
     plaintext = ""
+    blockSize = calcBlockSize(ciphertext, BLOCK_COUNT) # Size of blocks
+    blocks = createBlocks(ciphertext, blockSize)
+    for block in blocks:
+        # print(f"'{block}'") # DEBUGGING
+        K, L, R = createBlockRounds(ROUNDS)
+        pieceSize = (int)(blockSize/2)
+
+        R[0] = block[pieceSize:blockSize] # Split blocks into even L/R sides (Swap L/R from encryption output)
+        L[0] = block[0:pieceSize]
+        K[0] = genSubKey(R[0],key)
+        print(f"K{0} '{K[0]}'") # DEBUGGING
+        # print(f"L{ROUNDS} '{L[ROUNDS]}'") # DEBUGGING
+        # print(f"R{ROUNDS} '{R[ROUNDS]}'") # DEBUGGING
+
+        for i in range(1,ROUNDS+1): # Iterate through rounds, including final ciphertext round
+            # print(i) # DEBUGGING
+            L[i] = R[i-1] # Assign L to past R (Swap)
+            R[i] = xor(L[i-1], roundFunc(R[i-1],K[i-1],i)) # Complete XOR on past L and past F(R,K)
+            K[i] = genSubKey(R[i], key) # Generate subkey for round using CBC (Cipher Block Chaining), combining initial key with previous value
+            print(f"K{i} '{K[i]}'") # DEBUGGING
+        # print(f"L0 '{L[0]}'") # DEBUGGING
+        # print(f"R0 '{R[0]}'") # DEBUGGING
+        plaintext += (R[ROUNDS] + L[ROUNDS]) # Re-combine final L/R for block and add to block
     return plaintext
 
 def calcBlockSize(s,count): # Calculate block size given string and desired amount of blocks
@@ -141,10 +164,14 @@ def xor(s1,s2): # Perform XOR on two strings
 def roundFunc(s,key,i): # Performs 'scramble' function on R side of block and Key.
     # Complete round function on R and Key.
     # Used similar round function from research. github/filgut1
+    # When using this round function, and running the encrypted text through the same 
+    # function to decrypt, the text is unreadable. I am only able to get a readable
+    # decrypted value when using a round function that is two-way (Cannot use pow/etc),
+    # unless it is allowed to use separate round functions.
     key = bintoint(strtobin(key)) # Convert K from String to Binary represented as Int
     s = bintoint(strtobin(s)) # Convert S from String to Binary represented as Int
     # r = pow((s*key),i) # Complete work on S and K
-    r = s # DEBUGGING
+    r = s^key # DEBUGGING
     return bintostr(inttobin(r)) # Convert R from Int representation of Bin to Str
 
 def strtobin(s): # Convert String to Binary
