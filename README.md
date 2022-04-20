@@ -3,6 +3,17 @@ My implementation of the *Feistel Cipher* in Python. I have documented a few cha
 
 Ideally, I would be able to produce a more secure cipher, given a better understanding of these issues.
 
+## Usage
+```
+python3 feistel.py 
+    -m (e|encrypt, d|decrypt, i|interactive) 
+    [-f <file> (required if -m not i|interactive)]
+    [-k <key> (required if -m not i|interactive)]
+```
+
+## Demo
+...
+
 ## Challenges
 ### Key Generation
 I used a Cipher Block Chaining (CBC) method to generate the keys for each round, which utilises text from the current round (Specifically, the unaltered side) to create a unique key that will only relate to that round (And cannot be generated with the same key/rounds, but different input text). This provides more security than traditional methods such as Electronic Code Book (ECB), which doesn't utilise text rounds to generate keys, only the round iterator and the current key.
