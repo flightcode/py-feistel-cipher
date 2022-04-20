@@ -78,8 +78,16 @@ def main(): # Welcome message and run menu
                 else:
                     return errorMessage("Key not specified!")
         else:
+            print('Usage: ./feistel.py -m <mode> -f <file> -k <key>')
+            print('Modes: e|encrypt')
+            print('       d|decrypt')
+            print('       i|interactive')
             return errorMessage("File not specified!")
     else:
+        print('Usage: ./feistel.py -m <mode> -f <file> -k <key>')
+        print('Modes: e|encrypt')
+        print('       d|decrypt')
+        print('       i|interactive')
         return errorMessage("Invalid mode specified!")
 
 def encrypt(plaintext, key): # Encrypt string with given key through feistel structure  
