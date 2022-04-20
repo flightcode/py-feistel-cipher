@@ -12,7 +12,17 @@ python3 feistel.py
 ```
 
 ## Demo
-...
+Using the plaintext:
+```
+At seventeen minutes past four in the afternoon, whilst the passengers were assembled at lunch in the great saloon, a slight shock was felt on the hull of the Scotia.
+```
+With key `KEY` gives the ciphertext:
+```
+uc_]"NEpr#BE
+wCd"gM^a@0sO`p8 Y$F:P1ct`sL,Z0gg_K$w40bQ"Rrr89yoF7!f r ig	H#ab7f_-9:oHuXz\qe
+d54Ru+]9 *R^w<re2f0i\h;!Q2 X^{7;1)^8q5jo_<]wsa2<J6{x)3#
+```
+Decrypting with the provided key gives the same plaintext result.
 
 ## Challenges
 ### Key Generation
