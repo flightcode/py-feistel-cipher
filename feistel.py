@@ -7,7 +7,7 @@
 #   python3 feistel.py 
 #       -m (e|encrypt, d|decrypt, i|interactive) 
 #       [-f <file> (required if -m not i|interactive)]
-#       [-k <key> (required if -m e|encrypt)]
+#       [-k <key> (required if -m not i|interactive)]
 
 import sys # For CLI rguments
 import getopt # Parses CLI arguments
